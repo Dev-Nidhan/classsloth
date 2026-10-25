@@ -2,7 +2,7 @@
 
 Your week, organized. Your exams, less stressful.
 
-- **Hosted demo:** Render runs a Docker web service with Streamlit and Ollama. Gemma 3 4B is pulled onto a private disk and answers only through the app. Port 11434 is not public. The service uses Render's 8 GB plan so the 4B weights fit; a $50 credit covers roughly a week at that size, then the instance needs to be scaled down or it will bill. Google login, private uploads, SerpApi, and ElevenLabs stay off the public host. The first open after a cold start waits while the model loads.
+- **Hosted demo:** https://classsloth.onrender.com — Render runs a Docker web service with Streamlit and Ollama. Gemma 3 4B is pulled onto a private disk and answers only through the app. Port 11434 is not public. The service uses Render's 8 GB plan so the 4B weights fit; a $50 credit covers roughly a week at that size, then the instance needs to be scaled down or it will bill. Google login, private uploads, SerpApi, and ElevenLabs stay off the public host. The first open after a cold start waits while the model loads.
 - Source: https://github.com/Dev-Nidhan/classsloth
 - Demo (about 75 seconds): https://github.com/Dev-Nidhan/classsloth/blob/main/docs/demo.webm
 - License: [MIT](LICENSE)
