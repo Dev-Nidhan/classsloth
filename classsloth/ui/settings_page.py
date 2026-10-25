@@ -24,6 +24,16 @@ ZONES = [
 def render() -> None:
     settings, db, tz, now, _scope = context()
     st.markdown("## Settings")
+    if settings.public_demo:
+        st.info(
+            "Classroom sign-in, Ollama, SerpApi, and ElevenLabs are disabled on this server. "
+            "Clone the repository to use them on your own computer. The demo week below is synthetic.",
+            title="Public demo",
+        )
+        if st.button("Reload demo week"):
+            count = load_demo(db, now, tz)
+            st.success(f"Stored {count} labeled demo assignments.")
+        return
     st.markdown("#### This computer")
     st.write(
         "The first Classroom sync needs the internet. After that, cached assignments, "

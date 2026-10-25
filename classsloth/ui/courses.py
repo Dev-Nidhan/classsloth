@@ -60,6 +60,12 @@ def render() -> None:
                 st.caption(material["description"][:240])
 
     st.markdown("#### Your notes")
+    if settings.public_demo:
+        st.info(
+            "Uploads, note matching, web search, and audio are turned off here so a shared server never keeps private files.",
+            title="Local only",
+        )
+        return
     uploaded = st.file_uploader("Upload a PDF or text note", type=["pdf", "txt", "md"])
     topic = st.text_input("Topic", placeholder="membranes, mitosis, primary sources")
     if st.button("Save note", disabled=uploaded is None):

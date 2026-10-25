@@ -23,6 +23,7 @@ class Settings:
     serpapi_key: str | None
     elevenlabs_key: str | None
     elevenlabs_voice: str
+    public_demo: bool = False
 
     @property
     def db_path(self) -> Path:
@@ -42,6 +43,8 @@ class Settings:
 
     @property
     def google_configured(self) -> bool:
+        if self.public_demo:
+            return False
         if self.google_secrets_file and self.google_secrets_file.exists():
             return True
         return bool(self.google_client_id and self.google_client_secret)
@@ -64,17 +67,29 @@ def load_settings(env_file: Path | None = None) -> Settings:
     if secrets:
         candidate = Path(secrets)
         secrets_path = candidate if candidate.is_absolute() else (ROOT / candidate).resolve()
+    public_demo = os.getenv("CLASSSLOTH_PUBLIC_DEMO", "").strip().lower() in {"1", "true", "yes"}
+    client_id = _blank(os.getenv("GOOGLE_CLIENT_ID"))
+    client_secret = _blank(os.getenv("GOOGLE_CLIENT_SECRET"))
+    serpapi_key = _blank(os.getenv("SERPAPI_API_KEY"))
+    elevenlabs_key = _blank(os.getenv("ELEVENLABS_API_KEY"))
+    if public_demo:
+        client_id = None
+        client_secret = None
+        secrets_path = None
+        serpapi_key = None
+        elevenlabs_key = None
     return Settings(
         ollama_host=os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/"),
         ollama_model=os.getenv("OLLAMA_MODEL", "gemma3:4b"),
         timezone=os.getenv("CLASSSLOTH_TIMEZONE", "local"),
         data_dir=data_dir,
-        google_client_id=_blank(os.getenv("GOOGLE_CLIENT_ID")),
-        google_client_secret=_blank(os.getenv("GOOGLE_CLIENT_SECRET")),
+        google_client_id=client_id,
+        google_client_secret=client_secret,
         google_secrets_file=secrets_path,
-        serpapi_key=_blank(os.getenv("SERPAPI_API_KEY")),
-        elevenlabs_key=_blank(os.getenv("ELEVENLABS_API_KEY")),
+        serpapi_key=serpapi_key,
+        elevenlabs_key=elevenlabs_key,
         elevenlabs_voice=os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"),
+        public_demo=public_demo,
     )
 
 

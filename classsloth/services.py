@@ -82,6 +82,16 @@ def load_demo(db: Database, now: datetime, tz: ZoneInfo) -> int:
     return seed_demo(db, now, tz)
 
 
+def ensure_public_demo(db: Database, settings: Settings, now: datetime, tz) -> int:
+    """Seed labeled demo rows on a public host. Never writes live Classroom data."""
+
+    if not settings.public_demo:
+        return 0
+    if db.list_assignments("demo"):
+        return 0
+    return seed_demo(db, now, tz)
+
+
 def make_plan(db: Database, settings: Settings, source: str | None, now: datetime) -> WeeklyPlan:
     tz = student_zone(settings)
     scope = source if source in {"live", "demo"} else "all"

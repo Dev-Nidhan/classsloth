@@ -14,6 +14,12 @@ def render() -> None:
     settings, db, _tz, _now, scope = context()
     st.markdown("## Exam prep")
     st.caption("Revision notes, flashcards, and questions are generated locally from the notes you select.")
+    if settings.public_demo:
+        st.info(
+            "Revision packs and spoken audio run on your computer. This public host does not call Gemma or ElevenLabs.",
+            title="Exam prep is local",
+        )
+        return
     courses = db.list_courses(scope)
     if not courses:
         st.info("Add a course by loading the demo week or syncing Classroom.")

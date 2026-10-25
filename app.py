@@ -1,8 +1,12 @@
 """ClassSloth entry point."""
 
+from datetime import datetime
+
 import streamlit as st
 
-from classsloth.ui.common import inject
+from classsloth.config import load_settings
+from classsloth.services import effective, ensure_public_demo, student_zone
+from classsloth.ui.common import get_db, inject
 from classsloth.ui.courses import render as render_courses
 from classsloth.ui.dashboard import render as render_dashboard
 from classsloth.ui.exam import render as render_exam
@@ -16,6 +20,16 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 inject()
+
+_settings = effective(load_settings(), get_db())
+if _settings.public_demo:
+    _zone = student_zone(_settings)
+    ensure_public_demo(get_db(), _settings, datetime.now(_zone), _zone)
+    st.info(
+        "These assignments are synthetic and labeled Demo. "
+        "This server does not sign in to Google, store uploaded notes, call Gemma, search the web, or make audio.",
+        title="Public demo",
+    )
 
 if "source_filter" not in st.session_state:
     st.session_state["source_filter"] = "all"
