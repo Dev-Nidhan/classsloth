@@ -58,13 +58,12 @@ def render() -> None:
     if plan and edited:
         st.caption("You edited this plan. Regenerate replaces your edits.")
 
-    if settings.public_demo:
-        st.info(
-            "Gemma stays on your computer. This public host only shows the date-based order for the labeled demo week.",
-            title="Planning is local",
-        )
-    elif st.button("Generate plan with Gemma", type="primary", disabled=not (board.overdue or board.this_week or board.undated or board.later)):
-        with st.spinner(f"Asking {settings.ollama_model} locally…"):
+    if st.button(
+        "Generate plan with Gemma",
+        type="primary",
+        disabled=not (board.overdue or board.this_week or board.undated or board.later),
+    ):
+        with st.spinner(f"Asking {settings.ollama_model}…"):
             try:
                 plan = make_plan(db, settings, scope, now)
             except (OllamaError, ModelOutputError) as exc:

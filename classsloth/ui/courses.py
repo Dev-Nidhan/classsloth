@@ -61,27 +61,26 @@ def render() -> None:
 
     st.markdown("#### Your notes")
     if settings.public_demo:
-        st.info(
-            "Uploads, note matching, web search, and audio are turned off here so a shared server never keeps private files.",
-            title="Local only",
+        st.caption(
+            "This demo includes one bundled note. Uploading your own files is off, so private notes are not stored on the shared server."
         )
-        return
-    uploaded = st.file_uploader("Upload a PDF or text note", type=["pdf", "txt", "md"])
-    topic = st.text_input("Topic", placeholder="membranes, mitosis, primary sources")
-    if st.button("Save note", disabled=uploaded is None):
-        try:
-            note_id = store_upload(
-                db,
-                settings,
-                filename=uploaded.name,
-                data=uploaded.getvalue(),
-                course_id=course_id,
-                topic=topic,
-            )
-        except DocumentError as exc:
-            st.error(str(exc))
-        else:
-            st.success(f"Saved locally as note {note_id}. The same file is not copied twice.")
+    else:
+        uploaded = st.file_uploader("Upload a PDF or text note", type=["pdf", "txt", "md"])
+        topic = st.text_input("Topic", placeholder="membranes, mitosis, primary sources")
+        if st.button("Save note", disabled=uploaded is None):
+            try:
+                note_id = store_upload(
+                    db,
+                    settings,
+                    filename=uploaded.name,
+                    data=uploaded.getvalue(),
+                    course_id=course_id,
+                    topic=topic,
+                )
+            except DocumentError as exc:
+                st.error(str(exc))
+            else:
+                st.success(f"Saved locally as note {note_id}. The same file is not copied twice.")
 
     notes = [note for note in db.list_notes() if note.course_id in {course_id, None}]
     course_notes = [note for note in notes if note.course_id == course_id]
@@ -117,6 +116,9 @@ def render() -> None:
         st.caption("Add a note and keep at least one assignment to match them.")
 
     st.markdown("#### Study resource finder")
+    if settings.public_demo:
+        st.caption("Web search and audio stay off this public demo. The bundled note can still be matched with Gemma above.")
+        return
     st.caption("Optional live web search through SerpApi. Results are not the same as your uploaded notes.")
     query = st.text_input("Topic or concept", key="serp-query")
     if st.button("Search the web"):

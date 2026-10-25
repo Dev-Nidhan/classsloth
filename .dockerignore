@@ -1,0 +1,9 @@
+.venv
+.git
+data
+docs/raw
+docs/demo.webm
+**/__pycache__
+.pytest_cache
+.mypy_cache
+*.pyc

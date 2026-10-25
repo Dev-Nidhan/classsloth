@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -38,8 +39,11 @@ def test_public_demo_seeds_demo_rows_only(tmp_path):
             source="live",
         )
     )
-    settings = load_settings(env_file=Path(tmp_path) / "missing.env")
-    settings = type(settings)(**{**settings.__dict__, "public_demo": True})
+    settings = replace(
+        load_settings(env_file=Path(tmp_path) / "missing.env"),
+        public_demo=True,
+        data_dir=tmp_path,
+    )
     now = datetime(2026, 10, 26, 12, tzinfo=timezone.utc)
     first = ensure_public_demo(db, settings, now, timezone.utc)
     second = ensure_public_demo(db, settings, now, timezone.utc)
@@ -47,3 +51,5 @@ def test_public_demo_seeds_demo_rows_only(tmp_path):
     assert second == 0
     assert [row.title for row in db.list_assignments("live")] == ["Real essay"]
     assert all(row.source == "demo" and row.title.startswith("Demo:") for row in db.list_assignments("demo"))
+    notes = db.list_notes("demo:course:cell-bio")
+    assert any(note.filename == "cell-biology-notes.txt" for note in notes)

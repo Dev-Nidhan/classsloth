@@ -1,17 +1,26 @@
-# Public demo only. No OAuth secrets, no uploaded notes, no model endpoint.
+# Public demo. Gemma 3 4B runs inside this container on localhost.
+# Port 11434 is not published. Classroom login and private uploads stay off.
 services:
   - type: web
     name: classsloth
-    runtime: python
-    plan: free
+    runtime: docker
+    plan: pro plus
     region: singapore
-    buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --browser.gatherUsageStats false
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    disk:
+      name: ollama-models
+      mountPath: /data/ollama
+      sizeGB: 10
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.12.7
       - key: CLASSSLOTH_PUBLIC_DEMO
         value: "1"
+      - key: OLLAMA_MODEL
+        value: gemma3:4b
+      - key: OLLAMA_MODELS
+        value: /data/ollama
+      - key: CLASSSLOTH_NUM_CTX
+        value: "4096"
       - key: CLASSSLOTH_TIMEZONE
         value: UTC
       - key: CLASSSLOTH_DATA_DIR

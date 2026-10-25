@@ -17,10 +17,10 @@ from classsloth.ai import (
 )
 from classsloth.audio import synthesize
 from classsloth.classroom_client import ClassroomError, GoogleClassroomClient, SyncResult
-from classsloth.config import Settings, with_preferences
+from classsloth.config import ROOT, Settings, with_preferences
 from classsloth.dates import zone
 from classsloth.db import Database
-from classsloth.demo import seed_demo
+from classsloth.demo import DEMO_BIO, seed_demo
 from classsloth.documents import DocumentError, extract_document
 from classsloth.models import Assignment, ExamPack, MaterialInsight, WeeklyPlan
 from classsloth.priority import build_dashboard
@@ -87,9 +87,30 @@ def ensure_public_demo(db: Database, settings: Settings, now: datetime, tz) -> i
 
     if not settings.public_demo:
         return 0
-    if db.list_assignments("demo"):
-        return 0
-    return seed_demo(db, now, tz)
+    created = 0
+    if not db.list_assignments("demo"):
+        created = seed_demo(db, now, tz)
+    _seed_bundled_note(db, settings)
+    return created
+
+
+def _seed_bundled_note(db: Database, settings: Settings) -> None:
+    sample = ROOT / "examples" / "cell-biology-notes.txt"
+    if not sample.is_file():
+        return
+    already = any(
+        note.filename == sample.name and note.course_id == DEMO_BIO for note in db.list_notes()
+    )
+    if already:
+        return
+    store_upload(
+        db,
+        settings,
+        filename=sample.name,
+        data=sample.read_bytes(),
+        course_id=DEMO_BIO,
+        topic="cells",
+    )
 
 
 def make_plan(db: Database, settings: Settings, source: str | None, now: datetime) -> WeeklyPlan:

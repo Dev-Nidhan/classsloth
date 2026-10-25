@@ -26,10 +26,20 @@ def render() -> None:
     st.markdown("## Settings")
     if settings.public_demo:
         st.info(
-            "Classroom sign-in, Ollama, SerpApi, and ElevenLabs are disabled on this server. "
-            "Clone the repository to use them on your own computer. The demo week below is synthetic.",
+            "Gemma 3 4B runs inside this Render service for the labeled demo. "
+            "Google sign-in, private uploads, SerpApi, and ElevenLabs stay off. The model port is not public.",
             title="Public demo",
         )
+        if st.button("Check Gemma"):
+            from classsloth.ai import OllamaClient
+
+            ok, message = OllamaClient(settings.ollama_host, settings.ollama_model).status()
+            st.session_state["ollama_status"] = (ok, message)
+        model_ok = st.session_state.get("ollama_status")
+        if model_ok:
+            (st.success if model_ok[0] else st.warning)(model_ok[1])
+        else:
+            st.caption(f"Model: {settings.ollama_model}. The first request waits while the weights download onto this service.")
         if st.button("Reload demo week"):
             count = load_demo(db, now, tz)
             st.success(f"Stored {count} labeled demo assignments.")

@@ -2,7 +2,7 @@
 
 Your week, organized. Your exams, less stressful.
 
-- **Hosted demo:** the Render service runs demo mode only. It shows the labeled sample week and does not accept Google login, uploads, web search, audio, or a connection to Ollama.
+- **Hosted demo:** Render runs a Docker web service with Streamlit and Ollama. Gemma 3 4B is pulled onto a private disk and answers only through the app. Port 11434 is not public. The service uses Render's 8 GB plan so the 4B weights fit; a $50 credit covers roughly a week at that size, then the instance needs to be scaled down or it will bill. Google login, private uploads, SerpApi, and ElevenLabs stay off the public host. The first open after a cold start waits while the model loads.
 - Source: https://github.com/Dev-Nidhan/classsloth
 - Demo (about 75 seconds): https://github.com/Dev-Nidhan/classsloth/blob/main/docs/demo.webm
 - License: [MIT](LICENSE)
@@ -135,7 +135,7 @@ These are off unless you add a key and click the button.
 
 **ElevenLabs.** Exam Prep → Listen. You must check the disclosure box. Only the text in that box is sent, and passages over 2,500 characters are refused before any request. The mp3 is written under `data/audio/`. Missing keys and HTTP errors are shown on the page. The rest of the app works without audio.
 
-**Not used, on purpose.** GitHub Copilot was not part of this build, so this project should not be entered for Best Use of GitHub Copilot. A `.tech` domain is not set up. The Render service is the public demo described above; it does not host Ollama or real Classroom accounts.
+**Not used, on purpose.** GitHub Copilot was not part of this build, so this project should not be entered for Best Use of GitHub Copilot. A `.tech` domain is not set up. The Render service does not connect to real Classroom accounts.
 
 ## Tests
 
@@ -149,7 +149,7 @@ Covered: timezone week boundaries, missing due dates, priority, SQLite plans, de
 
 ## Prize categories this project is built for
 
-- **Best Use of Render.** The public web service is a Streamlit demo of the labeled week. It listens on Render's `PORT`, uses the free instance, and sets `CLASSSLOTH_PUBLIC_DEMO=1` so OAuth secrets, private notes, and the local model are not exposed. Gemma still runs only when you start the app on your own computer. Free instances sleep after a period of inactivity, so the first open can take a minute.
+- **Best Use of Render.** The public service is a Docker web app on Render's 8 GB plan. Ollama and Gemma 3 4B run in that container, bound to localhost, with the weights on a Render disk. Visitors only reach Streamlit. The labeled demo week is the only coursework on that host.
 - **Best Use of Gemma.** Gemma 3 4B through Ollama is the planner, the note matcher, and the exam-pack writer. Priorities are estimates. Due dates stay on the source record. Citations that name a page the file does not contain are removed.
 - **Best Use of SerpApi.** Courses and Materials can search a topic and keep only URLs the search actually returned. This needs `SERPAPI_API_KEY`. The demo recording uses the local notes path.
 - **Best Use of ElevenLabs.** Exam Prep can speak a passage the student selects, after a disclosure checkbox. This needs `ELEVENLABS_API_KEY`. Notes and plans work without it.

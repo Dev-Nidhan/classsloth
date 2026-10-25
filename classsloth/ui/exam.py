@@ -13,13 +13,7 @@ from classsloth.ui.common import context
 def render() -> None:
     settings, db, _tz, _now, scope = context()
     st.markdown("## Exam prep")
-    st.caption("Revision notes, flashcards, and questions are generated locally from the notes you select.")
-    if settings.public_demo:
-        st.info(
-            "Revision packs and spoken audio run on your computer. This public host does not call Gemma or ElevenLabs.",
-            title="Exam prep is local",
-        )
-        return
+    st.caption("Revision notes, flashcards, and questions are generated from the notes you select.")
     courses = db.list_courses(scope)
     if not courses:
         st.info("Add a course by loading the demo week or syncing Classroom.")
@@ -96,6 +90,10 @@ def render() -> None:
 
     if pack.outside_the_notes:
         st.info(pack.outside_the_notes, title="Not from your notes")
+
+    if settings.public_demo:
+        st.caption("Spoken audio stays off this public demo. ElevenLabs is available when you run ClassSloth on your computer.")
+        return
 
     st.markdown("#### Listen")
     st.info(DISCLOSURE, title="Audio leaves this computer")

@@ -7,6 +7,7 @@ Due dates, links, and page numbers are accepted only when they exist on the sour
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import datetime, timezone
 from typing import Protocol
@@ -148,6 +149,15 @@ RESOURCE_SCHEMA = {
 }
 
 
+def _num_ctx() -> int:
+    raw = os.getenv("CLASSSLOTH_NUM_CTX", "4096")
+    try:
+        value = int(raw)
+    except ValueError:
+        value = 4096
+    return min(8192, max(1024, value))
+
+
 class OllamaError(Exception):
     pass
 
@@ -233,7 +243,7 @@ class OllamaClient:
             "messages": messages,
             "stream": False,
             "format": fmt,
-            "options": {"temperature": 0.2, "num_ctx": 8192},
+            "options": {"temperature": 0.2, "num_ctx": _num_ctx()},
         }
         try:
             response = self.session.post(f"{self.host}/api/chat", json=payload, timeout=self.timeout)

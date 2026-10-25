@@ -26,8 +26,8 @@ if _settings.public_demo:
     _zone = student_zone(_settings)
     ensure_public_demo(get_db(), _settings, datetime.now(_zone), _zone)
     st.info(
-        "These assignments are synthetic and labeled Demo. "
-        "This server does not sign in to Google, store uploaded notes, call Gemma, search the web, or make audio.",
+        "Assignments on this site are the labeled demo set. Gemma 3 4B runs inside this Render service for that demo. "
+        "Google sign-in, private uploads, web search, and audio stay off. The model is not exposed as its own public address.",
         title="Public demo",
     )
 
